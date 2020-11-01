@@ -6,4 +6,4 @@ $ uvicorn main:app --reload
 ```
 
 ## Documentação
-A documentação da API pode ser acessada após rodar o projeto pela url: **localhost:8000/redoc**
+A documentação da API pode ser acessada pela url **localhost:8000/redoc**, após rodar o projeto .
