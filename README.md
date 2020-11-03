@@ -1,20 +1,17 @@
 # Vodan-API
 
 ## Instalação
-``` sh
-$ pip3 install fastapi
-```
-``` sh
-$ pip3 install uvicorn
-```
-``` sh
-$ pip3 install pymysql
+
+```console
+$ docker-compose up --build
 ```
 
-## Rodar Projeto
-``` sh
-$ uvicorn main:app --reload   
+## Desligar os serviços
+
+```console
+$ docker-compose down
 ```
 
 ## Documentação
-A documentação da API pode ser acessada pela url **localhost:8000/redoc**, após rodar o projeto .
+
+A documentação da API pode ser acessada pela url http://localhost:8000/docs ou http://localhost:8000/redoc.
