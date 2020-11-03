@@ -24,7 +24,7 @@ ENV PATH="/venv/bin:$PATH"
 
 WORKDIR /app
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["python3", "main.py"]
 
