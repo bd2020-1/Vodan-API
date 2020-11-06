@@ -14,3 +14,9 @@ class ParticipantModule(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
+
+
+class ParticipantModuleGroup(BaseModel):
+    questionID: int
+    questionDescription: str
+    participantAnswer: Optional[str]
