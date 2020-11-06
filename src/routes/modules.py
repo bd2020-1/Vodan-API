@@ -36,7 +36,7 @@ async def get_all_groups_from_module(module_id: int):
 
 
 @router.get(
-    "/{module_id}/groups/{participant_id}", response_model=List[ParticipantModule], status_code=status.HTTP_200_OK
+    "/{module_id}/participants/{participant_id}", response_model=List[ParticipantModule], status_code=status.HTTP_200_OK
 )
 async def get_module_per_participant(module_id: int, participant_id: int):
     _query = get_sql_file(file_path_name="select/participant_module").format(
