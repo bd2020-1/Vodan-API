@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
@@ -9,9 +7,3 @@ class Group(BaseModel):
     questionOrder: str
 
 
-class ParticipantModule(BaseModel):
-    questionGroupID: Optional[int]
-    questionGroupDescription: Optional[str]
-    questionID: int
-    questionDescription: str
-    participantAnswer: Optional[str]

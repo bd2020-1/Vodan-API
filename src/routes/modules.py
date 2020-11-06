@@ -3,8 +3,8 @@ from typing import List
 from fastapi import APIRouter, status
 
 from config import database
-from models.groups import Group, ParticipantModule
-from models.modules import Module
+from models.groups import Group
+from models.modules import Module, ParticipantModule
 from utils import get_sql_file
 
 router = APIRouter()
