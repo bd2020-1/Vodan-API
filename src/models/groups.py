@@ -10,7 +10,7 @@ class Group(BaseModel):
 
 
 class ParticipantModule(BaseModel):
-    questionGroupID: Optional[str]
+    questionGroupID: Optional[int]
     questionGroupDescription: Optional[str]
     questionID: int
     questionDescription: str
