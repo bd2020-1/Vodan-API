@@ -13,6 +13,9 @@ MYSQL_USERNAME = config("MYSQL_USERNAME", cast=str, default='root')
 MYSQL_PASSWORD = config("MYSQL_PASSWORD", cast=Secret)
 MYSQL_PORT = config("MYSQL_PORT", cast=str, default="3306")
 
+
+APP_PORT = config("APP_PORT", cast=int, default=8000)
+
 DATABASE_URL = config(
     "DATABASE_URL",
     cast=DatabaseURL,
