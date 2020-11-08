@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Group(BaseModel):
+class QuestionForm(BaseModel):
     crfFormsID: int
     questionID: int
     questionOrder: str
