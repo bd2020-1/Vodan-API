@@ -1,17 +1,15 @@
-from typing import List, Dict
+from typing import List
 
 from fastapi import APIRouter, status
 
 from config import database
 from pydantic import BaseModel
 from models.modulesrecords import ModuleRecord
-from models.modules import Module
 from models.participants import Participant, NewParticipantQuestions
 from models.questions import Question
 from models.answers import Answer
 import sys
 
-# from pprint import pprint
 
 from routes.modules import get_all_modules, get_all_questions_from_module
 
