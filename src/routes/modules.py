@@ -52,7 +52,7 @@ async def get_module_per_participant(module_id: int, participant_id: int):
     "/{module_id}/groups/{group_id}/participants/{participant_id}", response_model=List[ParticipantModuleGroup], status_code=status.HTTP_200_OK
 )
 async def get_module_per_participant(module_id: int, group_id: int, participant_id: int):
-    _query = get_sql_file(file_path_name="select/participant_group").format(
+    _query = get_sql_file(file_path_name="select/participant_module_group").format(
         module_id=module_id, group_id=group_id, participant_id=participant_id
     )
 
