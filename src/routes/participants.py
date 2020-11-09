@@ -98,8 +98,11 @@ class AnsBody(BaseModel):
 
 @router.post("/{participant_id}/newrecord/{module_id}", status_code=status.HTTP_200_OK)
 async def post_participant_answers(participant_id: int, module_id: int, body: AnsBody):
-    await database.execute("BEGIN")
     try:
+        await database.execute("""
+            SET autocommit=0;
+            START TRANSACTION
+        """)
         answers = dict(body)['answers']
         # Cria um assessmentquestionnaire para o participante caso não exista
         # OBS: hospitalUnitID e questionnaireID são constantes por enquanto
@@ -147,7 +150,6 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
         """
         _values = []
         for ans in answers:
-            print(next_ans_id, next_form_record_id, module_id)
             value = dict(ans)
             value.update({
                 "questionGroupFormRecordID": next_ans_id,
@@ -158,12 +160,18 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
             next_ans_id += 1
         await database.execute_many(query=_query, values=_values)
     except:
-        await database.execute("ROLLBACK")
+        await database.execute("""
+            ROLLBACK;
+            SET autocommit=1
+        """)
         return {
             "erro": f"Erro ao registrar respostas:  {sys.exc_info()[0]}",
         }
     else:
-        await database.execute("COMMIT")
+        await database.execute("""
+            COMMIT;
+            SET autocommit=1
+        """)
         return {
             "sucesso": "Respostas registradas com sucesso",
         } 
