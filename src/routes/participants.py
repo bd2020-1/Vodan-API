@@ -30,8 +30,11 @@ async def get_all_participants():
     return participants
 
 
-
-@router.get("/{participant_id}/records", response_model=List[ModuleRecord], status_code=status.HTTP_200_OK, )
+@router.get(
+    "/{participant_id}/records",
+    response_model=List[ModuleRecord],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_modules_from_participant(participant_id: int):
     _query = f"""
         SELECT FM.formRecordID, MO.crfFormsID, MO.questionnaireID, MO.description, FM.dtRegistroForm
@@ -44,32 +47,41 @@ async def get_all_modules_from_participant(participant_id: int):
 
     return modules
 
+
 # @router.get("/{participant_id}/lastrecord", response_model=ModuleRecord, status_code=status.HTTP_200_OK)
 async def get_last_filled_module_from_participant(participant_id: int):
     modules = await get_all_modules_from_participant(participant_id)
     module = None
-    if modules: module = modules[-1]
+    if modules:
+        module = modules[-1]
     return module
 
 
-@router.get("/{participant_id}/nextquestions", response_model=List[Question], status_code=status.HTTP_200_OK)
+@router.get(
+    "/{participant_id}/nextquestions",
+    response_model=List[Question],
+    status_code=status.HTTP_200_OK,
+)
 async def get_next_module_questions_from_participant(participant_id: int):
     last_module = await get_last_filled_module_from_participant(participant_id)
     all_modules = await get_all_modules()
-    
+
     # Recuperar próximo módulo a ser respondido baseado no ultimo módulo preenchido para esse participante
-    if last_module and ( all_modules[-1]['crfFormsID'] != last_module['crfFormsID']):
-        next_module = next((m for m in all_modules if [m['crfFormsID'] > last_module['crfFormsID']]))
+    if last_module and (all_modules[-1]["crfFormsID"] != last_module["crfFormsID"]):
+        next_module = next(
+            (m for m in all_modules if [m["crfFormsID"] > last_module["crfFormsID"]])
+        )
     else:
         next_module = all_modules[0]
 
-    next_questions = await get_all_questions_from_module(next_module['crfFormsID'])
+    next_questions = await get_all_questions_from_module(next_module["crfFormsID"])
 
     return next_questions
 
 
-
-@router.get("/newrecord", response_model=NewParticipantQuestions, status_code=status.HTTP_200_OK)
+@router.get(
+    "/newrecord", response_model=NewParticipantQuestions, status_code=status.HTTP_200_OK
+)
 async def get_participant_questions():
     _query = f"""
         START TRANSACTION;
@@ -86,24 +98,27 @@ async def get_participant_questions():
         ORDER BY participantID DESC
     """
     participant = await database.fetch_one(_query)
-    questions = await get_next_module_questions_from_participant(participant['participantID'])
+    questions = await get_next_module_questions_from_participant(
+        participant["participantID"]
+    )
 
-    return {
-        "participant": participant,
-        "questions": questions
-    }
+    return {"participant": participant, "questions": questions}
+
 
 class AnsBody(BaseModel):
     answers: List[Answer]
 
+
 @router.post("/{participant_id}/newrecord/{module_id}", status_code=status.HTTP_200_OK)
 async def post_participant_answers(participant_id: int, module_id: int, body: AnsBody):
     try:
-        await database.execute("""
+        await database.execute(
+            """
             SET autocommit=0;
             START TRANSACTION
-        """)
-        answers = dict(body)['answers']
+        """
+        )
+        answers = dict(body)["answers"]
         # Cria um assessmentquestionnaire para o participante caso não exista
         # OBS: hospitalUnitID e questionnaireID são constantes por enquanto
         _query = f"""
@@ -121,7 +136,7 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
             FROM tb_formrecord
             ORDER BY formRecordID DESC
         """
-        next_form_record_id = (await database.fetch_one(_query))['formRecordID'] + 1
+        next_form_record_id = (await database.fetch_one(_query))["formRecordID"] + 1
 
         # Cria o formRecord
         _query = f"""
@@ -141,7 +156,9 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
             FROM tb_questiongroupformrecord
             ORDER BY questionGroupFormRecordID DESC
         """
-        next_ans_id = (await database.fetch_one(_query))['questionGroupFormRecordID'] + 1
+        next_ans_id = (await database.fetch_one(_query))[
+            "questionGroupFormRecordID"
+        ] + 1
 
         # Cria a resposta para cada resposta enviada
         _query = f"""   
@@ -151,28 +168,33 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
         _values = []
         for ans in answers:
             value = dict(ans)
-            value.update({
-                "questionGroupFormRecordID": next_ans_id,
-                "formRecordId": next_form_record_id,
-                "crfFormsID": module_id
-            })
+            value.update(
+                {
+                    "questionGroupFormRecordID": next_ans_id,
+                    "formRecordId": next_form_record_id,
+                    "crfFormsID": module_id,
+                }
+            )
             _values.append(value)
             next_ans_id += 1
         await database.execute_many(query=_query, values=_values)
     except:
-        await database.execute("""
+        await database.execute(
+            """
             ROLLBACK;
             SET autocommit=1
-        """)
+        """
+        )
         return {
             "erro": f"Erro ao registrar respostas:  {sys.exc_info()[0]}",
         }
     else:
-        await database.execute("""
+        await database.execute(
+            """
             COMMIT;
             SET autocommit=1
-        """)
+        """
+        )
         return {
             "sucesso": "Respostas registradas com sucesso",
-        } 
-
+        }

@@ -8,7 +8,7 @@ class Question(BaseModel):
     questionID: int
     questionOrder: int
     description: str
-    questionTypeID: int  = None
+    questionTypeID: int = None
     listTypeID: Optional[int] = None
     ListValues: List[ListValue] = None
     questionGroupID: int = None

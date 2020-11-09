@@ -35,4 +35,6 @@ def get_application():
 api = get_application()
 
 if __name__ == "__main__":
-    uvicorn.run("main:api", host='0.0.0.0', port=config.APP_PORT, reload=False, workers=3)
+    uvicorn.run(
+        "main:api", host="0.0.0.0", port=config.APP_PORT, reload=False, workers=3
+    )

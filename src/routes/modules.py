@@ -22,6 +22,7 @@ async def get_all_modules():
 
     return modules
 
+
 @router.get("/{module_id}", response_model=Module, status_code=status.HTTP_200_OK)
 async def get_module(module_id: int):
     _query = f"""
@@ -32,7 +33,12 @@ async def get_module(module_id: int):
     module = await database.fetch_all(_query)
     return module
 
-@router.get("/{module_id}/questions", response_model=List[Question], status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/{module_id}/questions",
+    response_model=List[Question],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_questions_from_module(module_id: int):
     _query = f"""
         SELECT crfFormsID, PV.questionID, questionOrder, description, questionTypeID, listTypeID, questionGroupID, subordinateTo, isAbout
@@ -44,19 +50,23 @@ async def get_all_questions_from_module(module_id: int):
     # Adicionando valores de itens de seleção para perguntas de seleção
     for idx, question in enumerate(questions):
         question = dict(question.items())
-        if question['listTypeID']:
+        if question["listTypeID"]:
             _query = f"""
                 SELECT *
                 FROM tb_listofvalues
                 WHERE listTypeID = {question['listTypeID']}
             """
             values = await database.fetch_all(_query)
-            question['ListValues'] = values
+            question["ListValues"] = values
         questions[idx] = question
     return questions
 
 
-@router.get("/{module_id}/questiongroups", response_model=List[QuestionGroups], status_code=status.HTTP_200_OK)
+@router.get(
+    "/{module_id}/questiongroups",
+    response_model=List[QuestionGroups],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_questiongroups_from_module(module_id: int):
 
     _query = f"""
@@ -74,9 +84,10 @@ async def get_all_questiongroups_from_module(module_id: int):
     return questiongroups
 
 
-
 @router.get(
-    "/{module_id}/participants/{participant_id}", response_model=List[ParticipantModule], status_code=status.HTTP_200_OK
+    "/{module_id}/participants/{participant_id}",
+    response_model=List[ParticipantModule],
+    status_code=status.HTTP_200_OK,
 )
 async def get_module_per_participant(module_id: int, participant_id: int):
     _query = get_sql_file(file_path_name="select/participant_module").format(
@@ -89,9 +100,13 @@ async def get_module_per_participant(module_id: int, participant_id: int):
 
 
 @router.get(
-    "/{module_id}/groups/{group_id}/participants/{participant_id}", response_model=List[ParticipantModuleGroup], status_code=status.HTTP_200_OK
+    "/{module_id}/groups/{group_id}/participants/{participant_id}",
+    response_model=List[ParticipantModuleGroup],
+    status_code=status.HTTP_200_OK,
 )
-async def get_module_per_participant(module_id: int, group_id: int, participant_id: int):
+async def get_module_per_participant(
+    module_id: int, group_id: int, participant_id: int
+):
     _query = get_sql_file(file_path_name="select/participant_module_group").format(
         module_id=module_id, group_id=group_id, participant_id=participant_id
     )
