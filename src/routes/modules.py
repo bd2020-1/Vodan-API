@@ -13,10 +13,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[Module], status_code=status.HTTP_200_OK)
 async def get_all_modules():
-    _query = f"""
-        SELECT crfFormsID, questionnaireID, description 
-        FROM tb_crfforms
-    """
+    _query = get_sql_file(file_path_name="select/get_all_modules")
 
     modules = await database.fetch_all(_query)
 
@@ -25,11 +22,9 @@ async def get_all_modules():
 
 @router.get("/{module_id}", response_model=Module, status_code=status.HTTP_200_OK)
 async def get_module(module_id: int):
-    _query = f"""
-        SELECT crfFormsID, questionnaireID, description 
-        FROM tb_crfforms
-        WHERE crfFormsID = {module_id}
-    """
+    _query = get_sql_file(file_path_name="select/get_module").format(
+        module_id=module_id
+    )
     module = await database.fetch_all(_query)
     return module
 
@@ -40,11 +35,9 @@ async def get_module(module_id: int):
     status_code=status.HTTP_200_OK,
 )
 async def get_all_questions_from_module(module_id: int):
-    _query = f"""
-        SELECT crfFormsID, PV.questionID, questionOrder, description, questionTypeID, listTypeID, questionGroupID, subordinateTo, isAbout
-        FROM tb_questiongroupform AS PV INNER JOIN tb_questions AS Q
-        ON PV.crfFormsID = {module_id} AND PV.questionID = Q.questionID
-    """
+    _query = get_sql_file(file_path_name="select/get_all_questions_from_module").format(
+        module_id=module_id
+    )
     questions = await database.fetch_all(_query)
 
     # Adicionando valores de itens de seleção para perguntas de seleção
@@ -69,16 +62,9 @@ async def get_all_questions_from_module(module_id: int):
 )
 async def get_all_questiongroups_from_module(module_id: int):
 
-    _query = f"""
-    SELECT *
-    FROM tb_questiongroup
-    WHERE questionGroupID IN (
-        SELECT questionGroupID
-        FROM tb_questiongroupform AS PV INNER JOIN tb_questions AS Q
-        ON PV.crfFormsID = {module_id} AND PV.questionID = Q.questionID
-        GROUP BY questionGroupID
-    )
-    """
+    _query = get_sql_file(
+        file_path_name="select/get_all_question_groups_from_module"
+    ).format(module_id=module_id)
     questiongroups = await database.fetch_all(_query)
 
     return questiongroups
@@ -90,7 +76,7 @@ async def get_all_questiongroups_from_module(module_id: int):
     status_code=status.HTTP_200_OK,
 )
 async def get_module_per_participant(module_id: int, participant_id: int):
-    _query = get_sql_file(file_path_name="select/participant_module").format(
+    _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
         module_id=module_id, participant_id=participant_id
     )
 
@@ -104,12 +90,12 @@ async def get_module_per_participant(module_id: int, participant_id: int):
     response_model=List[ParticipantModuleGroup],
     status_code=status.HTTP_200_OK,
 )
-async def get_module_per_participant(
+async def get_module_group_per_participant(
     module_id: int, group_id: int, participant_id: int
 ):
-    _query = get_sql_file(file_path_name="select/participant_module_group").format(
-        module_id=module_id, group_id=group_id, participant_id=participant_id
-    )
+    _query = get_sql_file(
+        file_path_name="select/get_module_group_per_participant"
+    ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
 
