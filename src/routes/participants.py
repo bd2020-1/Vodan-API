@@ -3,10 +3,15 @@ from typing import List, Dict
 from fastapi import APIRouter, status
 
 from config import database
+from pydantic import BaseModel
 from models.modulesrecords import ModuleRecord
 from models.modules import Module
 from models.participants import Participant, NewParticipantQuestions
 from models.questions import Question
+from models.answers import Answer
+import sys
+
+# from pprint import pprint
 
 from routes.modules import get_all_modules, get_all_questions_from_module
 
@@ -86,4 +91,80 @@ async def get_participant_questions():
     return {
         "participant": participant,
         "questions": questions
-    } 
+    }
+
+class AnsBody(BaseModel):
+    answers: List[Answer]
+
+@router.post("/{participant_id}/newrecord/{module_id}", status_code=status.HTTP_200_OK)
+async def post_participant_answers(participant_id: int, module_id: int, body: AnsBody):
+    await database.execute("BEGIN")
+    try:
+        answers = dict(body)['answers']
+        # Cria um assessmentquestionnaire para o participante caso não exista
+        # OBS: hospitalUnitID e questionnaireID são constantes por enquanto
+        _query = f"""
+            INSERT INTO tb_assessmentquestionnaire (participantID, hospitalUnitID, questionnaireID)
+            SELECT * FROM (SELECT {participant_id} as participantID, 1 as hospitalUnitID, 1 as questionnaireID) AS tmp
+            WHERE NOT EXISTS (
+                SELECT participantID FROM tb_assessmentquestionnaire WHERE participantID = {participant_id}
+            ) LIMIT 1;
+        """
+        await database.execute(_query)
+
+        # Descobre o maior formRecordID preenchido pela ultima resposta
+        _query = f"""
+            SELECT *
+            FROM tb_formrecord
+            ORDER BY formRecordID DESC
+        """
+        next_form_record_id = (await database.fetch_one(_query))['formRecordID'] + 1
+
+        # Cria o formRecord
+        _query = f"""
+            INSERT INTO tb_formrecord (formRecordID, participantID, hospitalUnitID, questionnaireID, crfFormsID)
+            VALUES ({next_form_record_id}, {participant_id}, 1, 1, {module_id})
+        """
+        await database.execute(_query)
+        _query = f"""
+            SELECT *
+            FROM tb_formrecord
+            ORDER BY questionGroupFormRecordID DESC
+        """
+
+        # Descobre o maior questiongroupformrecordID preenchido pela ultima resposta
+        _query = f"""
+            SELECT *
+            FROM tb_questiongroupformrecord
+            ORDER BY questionGroupFormRecordID DESC
+        """
+        next_ans_id = (await database.fetch_one(_query))['questionGroupFormRecordID'] + 1
+
+        # Cria a resposta para cada resposta enviada
+        _query = f"""   
+            INSERT INTO tb_questiongroupformrecord (questionGroupFormRecordID, formRecordId, crfFormsID, questionID, listOfValuesID, answer)
+            VALUES (:questionGroupFormRecordID, :formRecordId, :crfFormsID, :questionID, :listOfValuesID, :answer)
+        """
+        _values = []
+        for ans in answers:
+            print(next_ans_id, next_form_record_id, module_id)
+            value = dict(ans)
+            value.update({
+                "questionGroupFormRecordID": next_ans_id,
+                "formRecordId": next_form_record_id,
+                "crfFormsID": module_id
+            })
+            _values.append(value)
+            next_ans_id += 1
+        await database.execute_many(query=_query, values=_values)
+    except:
+        await database.execute("ROLLBACK")
+        return {
+            "erro": f"Erro ao registrar respostas:  {sys.exc_info()[0]}",
+        }
+    else:
+        await database.execute("COMMIT")
+        return {
+            "sucesso": "Respostas registradas com sucesso",
+        } 
+
