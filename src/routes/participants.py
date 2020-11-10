@@ -4,55 +4,26 @@ from fastapi import APIRouter, status
 
 from config import database
 from pydantic import BaseModel
-from models.modulesrecords import ModuleRecord
 from models.participants import Participant, NewParticipantQuestions
 from models.questions import Question
 from models.answers import Answer
 import sys
 
 
-from routes.modules import get_all_modules, get_all_questions_from_module
+from routes.modules import get_all_questions_from_module
+from service_utils import get_last_filled_module_from_participant, get_all_modules
+from utils import get_sql_file
 
 router = APIRouter()
 
 
 @router.get("/", response_model=List[Participant], status_code=status.HTTP_200_OK)
 async def get_all_participants():
-    _query = f"""
-        SELECT participantID, medicalRecord 
-        FROM tb_participant
-    """
+    _query = get_sql_file(file_path_name="select/get_all_participants")
 
     participants = await database.fetch_all(_query)
 
     return participants
-
-
-@router.get(
-    "/{participant_id}/records",
-    response_model=List[ModuleRecord],
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_modules_from_participant(participant_id: int):
-    _query = f"""
-        SELECT FM.formRecordID, MO.crfFormsID, MO.questionnaireID, MO.description, FM.dtRegistroForm
-        FROM tb_crfforms AS MO LEFT JOIN tb_formrecord AS FM
-        ON MO.crfFormsID=FM.crfFormsID
-        WHERE participantID = {participant_id}
-    """
-
-    modules = await database.fetch_all(_query)
-
-    return modules
-
-
-# @router.get("/{participant_id}/lastrecord", response_model=ModuleRecord, status_code=status.HTTP_200_OK)
-async def get_last_filled_module_from_participant(participant_id: int):
-    modules = await get_all_modules_from_participant(participant_id)
-    module = None
-    if modules:
-        module = modules[-1]
-    return module
 
 
 @router.get(
@@ -77,6 +48,9 @@ async def get_next_module_questions_from_participant(participant_id: int):
     return next_questions
 
 
+# TODO acredito que não deveria ser feito insert nessa rota de GET, poderíamos separar e pra parte da consulta utilizamos
+#  a rota /{module_id}/participants/{participant_id}
+# FIXME Falta também implementar o id do paciente
 @router.get(
     "/newrecord", response_model=NewParticipantQuestions, status_code=status.HTTP_200_OK
 )
