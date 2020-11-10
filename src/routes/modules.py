@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModule, ParticipantModuleGroup
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer
 from utils import get_sql_file
 
 router = APIRouter()
@@ -38,10 +38,10 @@ async def get_all_questions_from_module(module_id: int):
 
 @router.get(
     "/{module_id}/participants/{participant_id}",
-    response_model=List[ParticipantModule],
+    response_model=List[ParticipantModuleAnswer],
     status_code=status.HTTP_200_OK,
 )
-async def get_module_per_participant(module_id: int, participant_id: int):
+async def get_all_answers_from_module_per_participant(module_id: int, participant_id: int):
     _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
         module_id=module_id, participant_id=participant_id
     )
@@ -53,10 +53,10 @@ async def get_module_per_participant(module_id: int, participant_id: int):
 
 @router.get(
     "/{module_id}/groups/{group_id}/participants/{participant_id}",
-    response_model=List[ParticipantModuleGroup],
+    response_model=List[ParticipantModuleGroupAnswer],
     status_code=status.HTTP_200_OK,
 )
-async def get_module_group_per_participant(
+async def get_all_answers_from_module_group_per_participant(
     module_id: int, group_id: int, participant_id: int
 ):
     _query = get_sql_file(

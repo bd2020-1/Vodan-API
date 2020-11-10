@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic.main import BaseModel
 
 
-class ParticipantModule(BaseModel):
+class ParticipantModuleAnswer(BaseModel):
     questionGroupID: Optional[int]
     questionGroupDescription: Optional[str]
     questionID: int
@@ -10,7 +10,7 @@ class ParticipantModule(BaseModel):
     participantAnswer: Optional[str]
 
 
-class ParticipantModuleGroup(BaseModel):
+class ParticipantModuleGroupAnswer(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
