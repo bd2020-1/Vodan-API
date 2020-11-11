@@ -11,7 +11,6 @@ from utils import get_sql_file
 router = APIRouter()
 
 
-
 @router.get(
     "/{module_id}/questions",
     response_model=List[Question],
@@ -43,7 +42,9 @@ async def get_all_questions_from_module(module_id: int):
     response_model=List[ParticipantModuleAnswer],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_answers_from_module_per_participant(module_id: int, participant_id: int):
+async def get_all_answers_from_module_per_participant(
+    module_id: int, participant_id: int
+):
     _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
         module_id=module_id, participant_id=participant_id
     )

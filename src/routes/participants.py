@@ -31,7 +31,9 @@ async def get_all_participants():
     status_code=status.HTTP_200_OK,
 )
 async def get_next_modules_available_from_participant(participant_id: int):
-    _query_last_module_filled = get_sql_file(file_path_name="select/get_last_module_filled_by_participant").format(participant_id=participant_id)
+    _query_last_module_filled = get_sql_file(
+        file_path_name="select/get_last_module_filled_by_participant"
+    ).format(participant_id=participant_id)
     last_module_filled = await database.fetch_one(_query_last_module_filled)
 
     if last_module_filled:
