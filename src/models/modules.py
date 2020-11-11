@@ -14,3 +14,8 @@ class ParticipantModuleGroupAnswer(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
+
+
+class FormModule(BaseModel):
+    crfFormsID: int
+    description: str

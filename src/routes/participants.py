@@ -4,14 +4,13 @@ from fastapi import APIRouter, status
 
 from config import database
 from pydantic import BaseModel
+
+from models.modules import FormModule
 from models.participants import Participant, NewParticipantQuestions
-from models.questions import Question
 from models.answers import Answer
 import sys
 
-
 from routes.modules import get_all_questions_from_module
-from service_utils import get_last_filled_module_from_participant, get_all_modules
 from utils import get_sql_file
 
 router = APIRouter()
@@ -27,25 +26,26 @@ async def get_all_participants():
 
 
 @router.get(
-    "/{participant_id}/nextquestions",
-    response_model=List[Question],
+    "/{participant_id}/modules/available",
+    response_model=List[FormModule],
     status_code=status.HTTP_200_OK,
 )
-async def get_next_module_questions_from_participant(participant_id: int):
-    last_module = await get_last_filled_module_from_participant(participant_id)
-    all_modules = await get_all_modules()
+async def get_next_modules_available_from_participant(participant_id: int):
+    _query_last_module_filled = get_sql_file(file_path_name="select/get_last_module_filled_by_participant").format(participant_id=participant_id)
+    last_module_filled = await database.fetch_one(_query_last_module_filled)
 
-    # Recuperar próximo módulo a ser respondido baseado no ultimo módulo preenchido para esse participante
-    if last_module and (all_modules[-1]["crfFormsID"] != last_module["crfFormsID"]):
-        next_module = next(
-            (m for m in all_modules if [m["crfFormsID"] > last_module["crfFormsID"]])
-        )
+    if last_module_filled:
+        if last_module_filled["crfFormsID"] == 3:
+            _query = """SELECT crfFormsID, description FROM project_vodan.tb_crfforms WHERE description LIKE '%Admission%'"""
+            next_modules_available = await database.fetch_all(_query)
+        else:
+            _query = """SELECT crfFormsID, description FROM project_vodan.tb_crfforms WHERE description NOT LIKE '%Admission%'"""
+            next_modules_available = await database.fetch_all(_query)
     else:
-        next_module = all_modules[0]
+        _query = """SELECT crfFormsID, description FROM project_vodan.tb_crfforms WHERE description LIKE '%Admission%'"""
+        next_modules_available = await database.fetch_all(_query)
 
-    next_questions = await get_all_questions_from_module(next_module["crfFormsID"])
-
-    return next_questions
+    return next_modules_available
 
 
 @router.get(
@@ -67,9 +67,8 @@ async def get_participant_questions():
         ORDER BY participantID DESC
     """
     participant = await database.fetch_one(_query)
-    questions = await get_next_module_questions_from_participant(
-        participant["participantID"]
-    )
+    # FIXME remover dependencia entre rotas e adicionar em um utils de serviço
+    questions = await get_all_questions_from_module(module_id=1)
 
     return {"participant": participant, "questions": questions}
 
