@@ -48,9 +48,6 @@ async def get_next_module_questions_from_participant(participant_id: int):
     return next_questions
 
 
-# TODO acredito que não deveria ser feito insert nessa rota de GET, poderíamos separar e pra parte da consulta utilizamos
-#  a rota /{module_id}/participants/{participant_id}
-# FIXME Falta também implementar o id do paciente
 @router.get(
     "/newrecord", response_model=NewParticipantQuestions, status_code=status.HTTP_200_OK
 )
