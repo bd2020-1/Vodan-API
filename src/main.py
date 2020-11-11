@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import config
 from routes.modules import router as modules_router
-from routes.groups import router as groups_router
+from routes.participants import router as participants_router
 
 
 def get_application():
@@ -27,7 +27,7 @@ def get_application():
         await config.database.disconnect()
 
     app.include_router(modules_router, prefix="/modules")
-    app.include_router(groups_router, prefix="/groups")
+    app.include_router(participants_router, prefix="/participants")
 
     return app
 
@@ -35,4 +35,6 @@ def get_application():
 api = get_application()
 
 if __name__ == "__main__":
-    uvicorn.run("main:api", host='0.0.0.0', port=config.APP_PORT, reload=False, workers=3)
+    uvicorn.run(
+        "main:api", host="0.0.0.0", port=config.APP_PORT, reload=False, workers=3
+    )

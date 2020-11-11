@@ -1,7 +1,21 @@
-from pydantic import BaseModel
+from typing import Optional
+from pydantic.main import BaseModel
 
 
-class Module(BaseModel):
+class ParticipantModuleAnswer(BaseModel):
+    questionGroupID: Optional[int]
+    questionGroupDescription: Optional[str]
+    questionID: int
+    questionDescription: str
+    participantAnswer: Optional[str]
+
+
+class ParticipantModuleGroupAnswer(BaseModel):
+    questionID: int
+    questionDescription: str
+    participantAnswer: Optional[str]
+
+
+class FormModule(BaseModel):
     crfFormsID: int
-    questionnaireID: int
     description: str

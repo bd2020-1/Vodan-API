@@ -1,0 +1,2 @@
+SELECT participantID, medicalRecord
+FROM tb_participant
