@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic.main import BaseModel
+from datetime import datetime, time, timedelta
 
 
 class ParticipantModuleAnswer(BaseModel):
@@ -19,3 +20,10 @@ class ParticipantModuleGroupAnswer(BaseModel):
 class FormModule(BaseModel):
     crfFormsID: int
     description: str
+
+
+class ParticipantModules(BaseModel):
+    formRecordID: int
+    dtRegistroForm: Optional[datetime]
+    crfFormsID: int
+    
