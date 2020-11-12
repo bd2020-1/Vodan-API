@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
 from utils import get_sql_file
 
 
@@ -55,6 +55,23 @@ async def get_all_answers_from_module_per_participant(
 
 
 @router.get(
+    "/participants/{participant_id}/modules",
+    response_model=List[ParticipantModules],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_modules_from_participant(
+    participant_id: int
+):
+    _query = get_sql_file(
+        file_path_name="select/get_all_modules_per_participant"
+    ).format(participant_id=participant_id)
+
+    groups = await database.fetch_all(_query)
+
+    return groups
+
+
+@router.get(
     "/{module_id}/groups/{group_id}/participants/{participant_id}",
     response_model=List[ParticipantModuleGroupAnswer],
     status_code=status.HTTP_200_OK,
@@ -69,3 +86,5 @@ async def get_all_answers_from_module_group_per_participant(
     groups = await database.fetch_all(_query)
 
     return groups
+
+
