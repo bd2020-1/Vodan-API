@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic.main import BaseModel
-from datetime import datetime, time, timedelta
+from datetime import datetime
 
 
 class ParticipantModuleAnswer(BaseModel):

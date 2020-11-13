@@ -4,8 +4,7 @@ from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate, ParticipantModules
 from utils import get_sql_file
 
 
