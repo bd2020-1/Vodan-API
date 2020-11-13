@@ -1,10 +1,15 @@
 from typing import List
 
-from fastapi import APIRouter, status, FastAPI
+from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate, ParticipantModules
+from models.modules import (
+    ParticipantModuleAnswer,
+    ParticipantModuleGroupAnswer,
+    ParticipantModuleDate,
+    ParticipantModules,
+)
 from utils import get_sql_file
 
 
@@ -45,13 +50,14 @@ async def get_all_questions_from_module(module_id: int):
 async def get_all_answers_from_module_per_participant(
     module_id: int, participant_id: int
 ):
-    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_module").format(
-        module_id=module_id, participant_id=participant_id
-    )
+    _query = get_sql_file(
+        file_path_name="select/get_answers_per_participant_per_module"
+    ).format(module_id=module_id, participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
 
     return groups
+
 
 @router.get(
     "/{module_id}/questions/{participant_id}",
@@ -61,8 +67,12 @@ async def get_all_answers_from_module_per_participant(
 async def get_all_answers_from_module_per_participant_per_date(
     module_id: int, participant_id: int, data_attendance: str = None
 ):
-    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_date").format(
-        module_id=module_id, participant_id=participant_id, data_attendance=data_attendance
+    _query = get_sql_file(
+        file_path_name="select/get_answers_per_participant_per_date"
+    ).format(
+        module_id=module_id,
+        participant_id=participant_id,
+        data_attendance=data_attendance,
     )
 
     groups = await database.fetch_all(_query)
@@ -75,9 +85,7 @@ async def get_all_answers_from_module_per_participant_per_date(
     response_model=List[ParticipantModules],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_modules_from_participant(
-    participant_id: int
-):
+async def get_all_modules_from_participant(participant_id: int):
     _query = get_sql_file(
         file_path_name="select/get_all_modules_per_participant"
     ).format(participant_id=participant_id)
@@ -102,5 +110,3 @@ async def get_all_answers_from_module_group_per_participant(
     groups = await database.fetch_all(_query)
 
     return groups
-
-

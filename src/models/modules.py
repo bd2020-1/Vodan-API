@@ -28,8 +28,8 @@ class ParticipantModules(BaseModel):
     formRecordID: int
     dtRegistroForm: Optional[date]
     crfFormsID: int
-    
-    
+
+
 class ParticipantModuleDate(BaseModel):
     questionID: int
     questionDescription: str
