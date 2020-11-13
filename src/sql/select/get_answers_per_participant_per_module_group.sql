@@ -2,7 +2,6 @@ SELECT
 	q.questionID
     , q.description AS questionDescription
     , q_answer.answer AS participantAnswer
-    , q_answer.listOfValuesID
     , q_answer.description AS listParticipantAnswer
 FROM tb_questions AS q
 INNER JOIN tb_questiongroupform AS q_module

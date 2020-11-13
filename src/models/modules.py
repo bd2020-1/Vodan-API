@@ -9,7 +9,6 @@ class ParticipantModuleAnswer(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
-    listOfValuesID: Optional[int]
     listParticipantAnswer: Optional[str]
 
 
@@ -17,7 +16,6 @@ class ParticipantModuleGroupAnswer(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
-    listOfValuesID: Optional[int]
     listParticipantAnswer: Optional[str]
 
 
