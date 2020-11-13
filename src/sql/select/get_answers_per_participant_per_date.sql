@@ -2,7 +2,7 @@ SELECT
 	q.questionID
     , q.description AS questionDescription
     , q_answer.answer AS participantAnswer
-    ,values_novo.description
+    ,values_novo.description as listParticipantAnswer
 FROM tb_questions AS q -- tabela de perguntas
 INNER JOIN tb_questiongroupform AS q_module -- tabela de modulo
     ON q_module.questionID = q.questionID
