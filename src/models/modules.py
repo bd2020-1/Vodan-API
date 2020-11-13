@@ -32,4 +32,4 @@ class ParticipantModuleDate(BaseModel):
     questionID: int
     questionDescription: str
     participantAnswer: Optional[str]
-    description: Optional[str]
+    listParticipantAnswer: Optional[str]
