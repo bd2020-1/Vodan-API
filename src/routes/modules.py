@@ -4,8 +4,7 @@ from fastapi import APIRouter, status, FastAPI
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate, ParticipantModules
 from utils import get_sql_file
 
 
@@ -46,7 +45,7 @@ async def get_all_questions_from_module(module_id: int):
 async def get_all_answers_from_module_per_participant(
     module_id: int, participant_id: int
 ):
-    _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
+    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_module").format(
         module_id=module_id, participant_id=participant_id
     )
 
@@ -97,7 +96,7 @@ async def get_all_answers_from_module_group_per_participant(
     module_id: int, group_id: int, participant_id: int
 ):
     _query = get_sql_file(
-        file_path_name="select/get_module_group_per_participant"
+        file_path_name="select/get_answers_per_participant_per_module_group"
     ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
