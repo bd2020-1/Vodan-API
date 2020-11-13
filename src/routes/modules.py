@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, FastAPI
 
 from config import database
 from models.questions import Question
@@ -55,12 +55,12 @@ async def get_all_answers_from_module_per_participant(
     return groups
 
 @router.get(
-    "/{module_id}/participants/{participant_id}/{data_attendance}",
+    "/{module_id}/questions/{participant_id}",
     response_model=List[ParticipantModuleDate],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_answers_from_module_per_participant_per_date(
-    module_id: int, participant_id: int, data_attendance:str
+    module_id: int, participant_id: int, data_attendance: str = None
 ):
     _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_date").format(
         module_id=module_id, participant_id=participant_id, data_attendance=data_attendance
