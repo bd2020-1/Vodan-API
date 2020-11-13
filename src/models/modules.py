@@ -27,3 +27,9 @@ class ParticipantModules(BaseModel):
     dtRegistroForm: Optional[datetime]
     crfFormsID: int
     
+    
+class ParticipantModuleDate(BaseModel):
+    questionID: int
+    questionDescription: str
+    participantAnswer: Optional[str]
+    description: Optional[str]
