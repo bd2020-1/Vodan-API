@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 from models.modules import FormModule
 from models.participants import Participant, NewParticipantQuestions
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
+from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
 from models.answers import Answer
 import sys
 
@@ -168,3 +170,71 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
         return {
             "sucesso": "Respostas registradas com sucesso",
         }
+
+
+@router.get(
+    "/{participant_id}/modules/{module_id}",
+    response_model=List[ParticipantModuleAnswer],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_answers_from_module_per_participant(
+    participant_id: int, module_id: int
+):
+    _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
+        module_id=module_id, participant_id=participant_id
+    )
+
+    groups = await database.fetch_all(_query)
+
+    return groups
+
+
+@router.get(
+    "/{participant_id}/questions/{module_id}",
+    response_model=List[ParticipantModuleDate],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_answers_from_module_per_participant_per_date(
+    participant_id: int, module_id: int, data_attendance: str = None
+):
+    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_date").format(
+        module_id=module_id, participant_id=participant_id, data_attendance=data_attendance
+    )
+
+    groups = await database.fetch_all(_query)
+
+    return groups
+
+
+@router.get(
+    "/{participant_id}/modules",
+    response_model=List[ParticipantModules],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_modules_from_participant(
+    participant_id: int
+):
+    _query = get_sql_file(
+        file_path_name="select/get_all_modules_per_participant"
+    ).format(participant_id=participant_id)
+
+    groups = await database.fetch_all(_query)
+
+    return groups
+
+
+@router.get(
+    "/{participant_id}/groups/{group_id}/modules/{module_id}",
+    response_model=List[ParticipantModuleGroupAnswer],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_answers_from_module_group_per_participant(
+    participant_id: int, group_id: int, module_id: int
+):
+    _query = get_sql_file(
+        file_path_name="select/get_module_group_per_participant"
+    ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
+
+    groups = await database.fetch_all(_query)
+
+    return groups
