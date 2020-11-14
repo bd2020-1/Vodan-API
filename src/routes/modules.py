@@ -9,6 +9,7 @@ from models.modules import (
     ParticipantModuleGroupAnswer,
     ParticipantModuleDate,
     ParticipantModules,
+    QuestionGroups,
 )
 from utils import get_sql_file
 
@@ -40,3 +41,13 @@ async def get_all_questions_from_module(module_id: int):
             question["ListValues"] = values
         questions[idx] = question
     return questions
+
+@router.get("/{module_id}/questiongroups", response_model=List[QuestionGroups], status_code=status.HTTP_200_OK)
+async def get_all_questiongroups_from_module(module_id: int):
+
+    _query = get_sql_file(file_path_name="select/get_all_questiongroups_from_module").format(
+        module_id=module_id
+    )
+    questiongroups = await database.fetch_all(_query)
+
+    return questiongroups

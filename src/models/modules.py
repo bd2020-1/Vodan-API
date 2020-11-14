@@ -35,3 +35,9 @@ class ParticipantModuleDate(BaseModel):
     questionDescription: str
     participantAnswer: Optional[str]
     listParticipantAnswer: Optional[str]
+
+
+class QuestionGroups(BaseModel):
+    questionGroupID: int
+    description: str
+    comment: str

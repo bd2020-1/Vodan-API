@@ -6,7 +6,7 @@ from config import database
 from pydantic import BaseModel
 
 from models.modules import FormModule
-from models.participants import Participant, NewParticipantQuestions
+from models.participants import Participant
 from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
 from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
 from models.answers import Answer
@@ -52,10 +52,10 @@ async def get_next_modules_available_from_participant(participant_id: int):
     return next_modules_available
 
 
-@router.get(
-    "/newrecord", response_model=NewParticipantQuestions, status_code=status.HTTP_200_OK
+@router.post(
+    "/", response_model=Participant, status_code=status.HTTP_200_OK
 )
-async def get_participant_questions():
+async def new_participant():
     _query = f"""
         START TRANSACTION;
         SELECT @last_id:=max(participantID)+1 
@@ -71,10 +71,8 @@ async def get_participant_questions():
         ORDER BY participantID DESC
     """
     participant = await database.fetch_one(_query)
-    # FIXME remover dependencia entre rotas e adicionar em um utils de serviço
-    questions = await get_all_questions_from_module(module_id=1)
 
-    return {"participant": participant, "questions": questions}
+    return participant
 
 
 class AnsBody(BaseModel):
