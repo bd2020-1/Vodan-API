@@ -24,7 +24,7 @@ class FormModule(BaseModel):
 
 class ParticipantModules(BaseModel):
     formRecordID: int
-    dtRegistroForm: Optional[date]
+    dtRegisterForm: Optional[date]
     crfFormsID: int
     
     
