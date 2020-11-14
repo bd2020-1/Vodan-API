@@ -1,5 +1,7 @@
-SELECT formRecordID, CAST(dtRegistroForm as DATE) as dtRegisterForm , crfFormsID FROM tb_formrecord c
+SELECT formRecordID, CAST(dtRegistroForm as DATE) as dtRegisterForm , c.crfFormsID, a.description as FormsName FROM tb_formrecord c
 LEFT join tb_assessmentquestionnaire b 
 ON b.participantID = c.participantID
+LEFT join tb_crfforms a
+on c.crfFormsID = a.crfFormsID
 where b.participantID ={participant_id}
 order by crfFormsID, dtRegistroForm;

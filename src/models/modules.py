@@ -28,7 +28,7 @@ class ParticipantModules(BaseModel):
     formRecordID: int
     dtRegisterForm: Optional[date]
     crfFormsID: int
-
+    FormsName: str
 
 class ParticipantModuleDate(BaseModel):
     questionID: int
