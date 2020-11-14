@@ -1,9 +1,15 @@
 from typing import List
 
-from fastapi import APIRouter, status, FastAPI
+from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
+from models.modules import (
+    ParticipantModuleAnswer,
+    ParticipantModuleGroupAnswer,
+    ParticipantModuleDate,
+    ParticipantModules,
+)
 from utils import get_sql_file
 
 
@@ -34,5 +40,3 @@ async def get_all_questions_from_module(module_id: int):
             question["ListValues"] = values
         questions[idx] = question
     return questions
-
-
