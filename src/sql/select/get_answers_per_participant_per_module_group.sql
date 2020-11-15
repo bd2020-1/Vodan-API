@@ -17,6 +17,7 @@ LEFT JOIN (
         , q_answer.answer
         , q_answer.listOfValuesID
         , list_answer.description
+        ,form.dtRegistroForm
     FROM tb_questiongroupformrecord AS q_answer
     INNER JOIN tb_formrecord AS form
 		ON form.formRecordID = q_answer.formRecordID
@@ -26,5 +27,6 @@ LEFT JOIN (
 ) AS q_answer
 	ON q_answer.crfFormsID = q_module.crfFormsID
     AND q_answer.questionID = q_module.questionID
-WHERE q_group.questionGroupID = {group_id}
+WHERE q_group.questionGroupID = {group_id} and 
+q_answer.dtRegistroForm = (SELECT MAX(dtRegistroForm) FROM tb_formrecord where participantID ={participant_id} and crfFormsID = {module_id})
 ORDER BY q_module.questionOrder;

@@ -178,7 +178,7 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
 async def get_all_answers_from_module_per_participant(
     participant_id: int, module_id: int
 ):
-    _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
+    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_module").format(
         module_id=module_id, participant_id=participant_id
     )
 
@@ -230,7 +230,7 @@ async def get_all_answers_from_module_group_per_participant(
     participant_id: int, group_id: int, module_id: int
 ):
     _query = get_sql_file(
-        file_path_name="select/get_module_group_per_participant"
+        file_path_name="select/get_answers_per_participant_per_module_group"
     ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
