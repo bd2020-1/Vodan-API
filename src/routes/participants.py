@@ -7,15 +7,19 @@ from pydantic import BaseModel
 
 from models.modules import FormModule, ParticipantModuleAnswerWithFormID
 from models.participants import Participant
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
+from models.modules import (
+    ParticipantModules,
+)
+from models.modules import (
+    ParticipantModuleAnswer,
+    ParticipantModuleGroupAnswer,
+    ParticipantModuleDate,
+)
 from models.answers import Answer
 import sys
 
-from routes.modules import get_all_questions_from_module
 from utils import get_sql_file
 
-from typing import Set, Tuple
 
 router = APIRouter()
 
@@ -54,9 +58,7 @@ async def get_next_modules_available_from_participant(participant_id: int):
     return next_modules_available
 
 
-@router.post(
-    "/", response_model=Participant, status_code=status.HTTP_200_OK
-)
+@router.post("/", response_model=Participant, status_code=status.HTTP_200_OK)
 async def new_participant():
     _query = f"""
         START TRANSACTION;
@@ -180,9 +182,9 @@ async def post_participant_answers(participant_id: int, module_id: int, body: An
 async def get_all_answers_from_module_per_participant(
     participant_id: int, module_id: int
 ):
-    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_module").format(
-        module_id=module_id, participant_id=participant_id
-    )
+    _query = get_sql_file(
+        file_path_name="select/get_answers_per_participant_per_module"
+    ).format(module_id=module_id, participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
 
@@ -194,12 +196,10 @@ async def get_all_answers_from_module_per_participant(
     response_model=List[ParticipantModuleAnswerWithFormID],
     status_code=status.HTTP_200_OK,
 )
-async def get_last_module_answer(
-    participant_id: int
-):
-    _query = get_sql_file(file_path_name="select/get_last_answers_per_participant_per_module").format(
-        participant_id=participant_id
-    )
+async def get_last_module_answer(participant_id: int):
+    _query = get_sql_file(
+        file_path_name="select/get_last_answers_per_participant_per_module"
+    ).format(participant_id=participant_id)
 
     groups = await database.fetch_all(_query)
 
@@ -214,8 +214,12 @@ async def get_last_module_answer(
 async def get_all_answers_from_module_per_participant_per_date(
     participant_id: int, module_id: int, data_attendance: str = None
 ):
-    _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_date").format(
-        module_id=module_id, participant_id=participant_id, data_attendance=data_attendance
+    _query = get_sql_file(
+        file_path_name="select/get_answers_per_participant_per_date"
+    ).format(
+        module_id=module_id,
+        participant_id=participant_id,
+        data_attendance=data_attendance,
     )
 
     groups = await database.fetch_all(_query)
@@ -232,10 +236,10 @@ async def get_all_modules_from_participant(
     participant_id: int, list_modules: str = None
 ):
 
-    if not list_modules: 
-        list_modules = [1,2,3]
+    if not list_modules:
+        list_modules = [1, 2, 3]
     else:
-        list_modules = list(list_modules.split(','))
+        list_modules = list(list_modules.split(","))
 
     _query = get_sql_file(
         file_path_name="select/get_all_modules_per_participant"
@@ -254,14 +258,18 @@ async def get_all_modules_from_participant(
 async def get_all_answers_from_module_group_per_participant(
     participant_id: int, module_id: int, list_groups: str = None
 ):
-    if not list_groups: 
-        list_groups = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+    if not list_groups:
+        list_groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     else:
-        list_groups = list(list_groups.split(','))
-    
+        list_groups = list(list_groups.split(","))
+
     _query = get_sql_file(
         file_path_name="select/get_answers_per_participant_per_module_group"
-    ).format(module_id=module_id, participant_id=participant_id, list_groups=tuple(list_groups))
+    ).format(
+        module_id=module_id,
+        participant_id=participant_id,
+        list_groups=tuple(list_groups),
+    )
 
     groups = await database.fetch_all(_query)
 

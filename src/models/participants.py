@@ -8,4 +8,3 @@ from models.questions import Question
 class Participant(BaseModel):
     participantID: int
     medicalRecord: str = None
-
