@@ -230,16 +230,21 @@ async def get_all_modules_from_participant(
 
 
 @router.get(
-    "/{participant_id}/groups/{group_id}/modules/{module_id}",
+    "/{participant_id}/modules/{module_id}/groups",
     response_model=List[ParticipantModuleGroupAnswer],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_answers_from_module_group_per_participant(
-    participant_id: int, group_id: int, module_id: int
+    participant_id: int, module_id: int, list_groups: str = None
 ):
+    if not list_groups: 
+        list_groups = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+    else:
+        list_groups = list(list_groups.split(','))
+    
     _query = get_sql_file(
         file_path_name="select/get_answers_per_participant_per_module_group"
-    ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
+    ).format(module_id=module_id, participant_id=participant_id, list_groups=tuple(list_groups))
 
     groups = await database.fetch_all(_query)
 
