@@ -15,6 +15,8 @@ import sys
 from routes.modules import get_all_questions_from_module
 from utils import get_sql_file
 
+from typing import Set, Tuple
+
 router = APIRouter()
 
 
@@ -210,11 +212,17 @@ async def get_all_answers_from_module_per_participant_per_date(
     status_code=status.HTTP_200_OK,
 )
 async def get_all_modules_from_participant(
-    participant_id: int
+    participant_id: int, list_modules: str = None
 ):
+
+    if not list_modules: 
+        list_modules = [1,2,3]
+    else:
+        list_modules = list(list_modules.split(','))
+
     _query = get_sql_file(
         file_path_name="select/get_all_modules_per_participant"
-    ).format(participant_id=participant_id)
+    ).format(participant_id=participant_id, tuple_modules=tuple(list_modules))
 
     groups = await database.fetch_all(_query)
 
