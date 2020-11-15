@@ -4,13 +4,23 @@ from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import (
-    QuestionGroups,
-)
+from models.modules import QuestionGroups, FormModule
 from utils import get_sql_file
 
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[FormModule], status_code=status.HTTP_200_OK)
+async def get_all_modules():
+    _query = f"""
+        SELECT crfFormsID, questionnaireID, description 
+        FROM tb_crfforms
+    """
+
+    modules = await database.fetch_all(_query)
+
+    return modules
 
 
 @router.get(
