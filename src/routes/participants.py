@@ -5,7 +5,7 @@ from fastapi import APIRouter, status
 from config import database
 from pydantic import BaseModel
 
-from models.modules import FormModule
+from models.modules import FormModule, ParticipantModuleAnswerWithFormID
 from models.participants import Participant
 from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModules
 from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer, ParticipantModuleDate
@@ -182,6 +182,23 @@ async def get_all_answers_from_module_per_participant(
 ):
     _query = get_sql_file(file_path_name="select/get_answers_per_participant_per_module").format(
         module_id=module_id, participant_id=participant_id
+    )
+
+    groups = await database.fetch_all(_query)
+
+    return groups
+
+
+@router.get(
+    "/{participant_id}/last/module",
+    response_model=List[ParticipantModuleAnswerWithFormID],
+    status_code=status.HTTP_200_OK,
+)
+async def get_last_module_answer(
+    participant_id: int
+):
+    _query = get_sql_file(file_path_name="select/get_last_answers_per_participant_per_module").format(
+        participant_id=participant_id
     )
 
     groups = await database.fetch_all(_query)

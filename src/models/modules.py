@@ -12,6 +12,16 @@ class ParticipantModuleAnswer(BaseModel):
     listParticipantAnswer: Optional[str]
 
 
+class ParticipantModuleAnswerWithFormID(BaseModel):
+    crfFormsID: int
+    questionGroupID: Optional[int]
+    questionGroupDescription: Optional[str]
+    questionID: int
+    questionDescription: str
+    participantAnswer: Optional[str]
+    listParticipantAnswer: Optional[str]
+
+
 class ParticipantModuleGroupAnswer(BaseModel):
     questionID: int
     questionDescription: str
