@@ -4,6 +4,7 @@ SELECT
     , q_answer.answer AS participantAnswer
     , q_answer.description AS listParticipantAnswer
     , q_module.crfFormsID
+    , (SELECT description FROM tb_crfforms WHERE crfFormsID = q_module.crfFormsID) AS formName
 FROM tb_questions AS q
 INNER JOIN tb_questiongroupform AS q_module
     ON q_module.questionID = q.questionID

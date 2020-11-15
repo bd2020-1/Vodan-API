@@ -14,6 +14,7 @@ class ParticipantModuleAnswer(BaseModel):
 
 class ParticipantModuleAnswerWithFormID(BaseModel):
     crfFormsID: int
+    formName: str
     questionGroupID: Optional[int]
     questionGroupDescription: Optional[str]
     questionID: int
