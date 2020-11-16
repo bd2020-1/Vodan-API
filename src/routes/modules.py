@@ -4,11 +4,23 @@ from fastapi import APIRouter, status
 
 from config import database
 from models.questions import Question
-from models.modules import ParticipantModuleAnswer, ParticipantModuleGroupAnswer
+from models.modules import QuestionGroups, FormModule
 from utils import get_sql_file
 
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[FormModule], status_code=status.HTTP_200_OK)
+async def get_all_modules():
+    _query = f"""
+        SELECT crfFormsID, questionnaireID, description 
+        FROM tb_crfforms
+    """
+
+    modules = await database.fetch_all(_query)
+
+    return modules
 
 
 @router.get(
@@ -38,34 +50,15 @@ async def get_all_questions_from_module(module_id: int):
 
 
 @router.get(
-    "/{module_id}/participants/{participant_id}",
-    response_model=List[ParticipantModuleAnswer],
+    "/{module_id}/questiongroups",
+    response_model=List[QuestionGroups],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_answers_from_module_per_participant(
-    module_id: int, participant_id: int
-):
-    _query = get_sql_file(file_path_name="select/get_module_per_participant").format(
-        module_id=module_id, participant_id=participant_id
-    )
+async def get_all_questiongroups_from_module(module_id: int):
 
-    groups = await database.fetch_all(_query)
-
-    return groups
-
-
-@router.get(
-    "/{module_id}/groups/{group_id}/participants/{participant_id}",
-    response_model=List[ParticipantModuleGroupAnswer],
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_answers_from_module_group_per_participant(
-    module_id: int, group_id: int, participant_id: int
-):
     _query = get_sql_file(
-        file_path_name="select/get_module_group_per_participant"
-    ).format(module_id=module_id, group_id=group_id, participant_id=participant_id)
+        file_path_name="select/get_all_questiongroups_from_module"
+    ).format(module_id=module_id)
+    questiongroups = await database.fetch_all(_query)
 
-    groups = await database.fetch_all(_query)
-
-    return groups
+    return questiongroups
