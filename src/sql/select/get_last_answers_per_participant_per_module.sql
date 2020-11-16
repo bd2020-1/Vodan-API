@@ -8,7 +8,7 @@ SELECT
 FROM tb_questions AS q
 INNER JOIN tb_questiongroupform AS q_module
     ON q_module.questionID = q.questionID
-    AND q_module.crfFormsID = (SELECT MAX(crfFormsID) FROM tb_formrecord where participantID = {participant_id})
+    AND q_module.crfFormsID = (SELECT crfFormsID FROM tb_formrecord WHERE participantID = {participant_id} ORDER BY dtRegistroForm DESC, crfFormsID DESC LIMIT 1)
 LEFT JOIN tb_questiongroup AS q_group
 	ON q_group.questionGroupID = q.questionGroupID
 LEFT JOIN (
